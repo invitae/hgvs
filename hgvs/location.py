@@ -201,9 +201,9 @@ class AAPosition(object):
     uncertain = attr.ib(default=False)
 
     def validate(self):
-        if self.base is not None and self.base < 1:
+        if self.base is not None and self.base != "" and self.base < 1:
             return (ValidationLevel.ERROR, "AAPosition location must be >=1")
-        if self.aa is not None and len(self.aa) != 1:
+        if self.aa is not None and len(self.aa) > 1:
             return (ValidationLevel.ERROR, "More than 1 AA associated with position")
         return (ValidationLevel.VALID, None)
 
@@ -269,6 +269,18 @@ class AAPosition(object):
         if lhs.uncertain or rhs.uncertain:
             raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
         return lhs.base > rhs.base
+
+    def __le__(lhs, rhs):
+        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+        if lhs.uncertain or rhs.uncertain:
+            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+        return lhs.base <= rhs.base
+
+    def __ge__(lhs, rhs):
+        assert type(lhs) == type(rhs), "Cannot compare coordinates of different representations"
+        if lhs.uncertain or rhs.uncertain:
+            raise HGVSUnsupportedOperationError("Cannot compare coordinates of uncertain positions")
+        return lhs.base >= rhs.base
 
 
 @attr.s(slots=True, repr=False)

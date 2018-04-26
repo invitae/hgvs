@@ -52,7 +52,7 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "hgvs",
       ],
       install_requires=[
-          "attrs>=16.3.0,<17.3.0",  # https://github.com/biocommons/hgvs/issues/473
+          "attrs>=17.4.0",  # https://github.com/biocommons/hgvs/issues/473
           "biocommons.seqrepo",
           "biopython==1.69",    # 1.70 fails on rtd due to numpy absence
           "bioutils>=0.2.2",
@@ -60,12 +60,12 @@ setup(license="Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)",
           "enum34",
           "ipython<6",          # for hgvs-shell; >=6 for Py3 only
           "parsley",
-          "psycopg2!=2.7",  # 2.7 bug: https://github.com/psycopg/psycopg2/issues/517
+          "psycopg2-binary",
           "six",
       ] + version_specific_requirements,
       setup_requires=[
           "pytest-runner",
-          "setuptools_scm",
+          "setuptools_scm==1.11.1",  # bug in >1.13.1 https://github.com/pypa/setuptools_scm/issues/134
           "wheel",
       ],
       tests_require=[

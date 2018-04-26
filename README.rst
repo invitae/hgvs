@@ -5,13 +5,17 @@ The *hgvs* package provides a Python library to parse, format,
 validate, normalize, and map sequence variants according to `Variation
 Nomenclature`_ (aka Human Genome Variation Society) recommendations.
 
-+-----------------+---------------------------------------------------------------------+
-| **Project**     | |rtd_rel| / `Mailing List`_ / `Open Issues`_ / `Apache License`_    |
-+-----------------+---------------------------------------------------------------------+
-| **Release**     | |pypi_rel| / `Change Log`_                                          |
-+-----------------+---------------------------------------------------------------------+
-| **Development** | `Code`_  /  |status_rel|                                            |
-+-----------------+---------------------------------------------------------------------+
++--------------------+--------------------------------------------------------------------+
+| **Information**    | | |rtd|   |changelog|  |github_license|                            |
+|                    | | |gitter|   |group|                                               |
++--------------------+--------------------------------------------------------------------+
+| **Latest Release** | |github_tag|   |pypi_rel|                                          |
++--------------------+--------------------------------------------------------------------+
+| **Development**    | | |status_rel|  |coveralls|                                        |
+|                    | | |github_issues|  |github_open_pr|                                |
+|                    | | |github_stars|  |github_forks|   |github_contrib|                |
++--------------------+--------------------------------------------------------------------+
+
 
 
 Features
@@ -99,8 +103,8 @@ object models back into HGVS strings.
   'NC_000007.13:g.36561662C>T'
 
 
-Projecting ("Mapping") variants between aligned seqeunces
-#########################################################
+Projecting ("Mapping") variants between aligned genome and transcript sequences
+###############################################################################
 
 `hgvs` provides tools to project variants between genome, transcript,
 and protein sequences.  Non-coding and intronic variants are
@@ -133,6 +137,44 @@ supported.  Alignment data come from the `Universal Transcript Archive
   # CDS coordinates use BaseOffsetPosition to support intronic offsets
   >>> var_c.posedit.pos.start
   BaseOffsetPosition(base=1582, offset=0, datum=Datum.CDS_START, uncertain=False)
+
+
+Translating coding variants to protein sequences
+################################################
+
+Coding variants may be translated to their protein consequences.  HGVS
+uses the same pairing of transcript and protein accessions as seen in
+NCBI and Ensembl.
+
+::
+
+   # translate var_c to its protein consequence
+   # The object structure of protein variants is nearly identical to
+   # that of nucleic acid variants and is converted to a string form
+   # by stringification. Per HGVS recommendations, inferred consequences
+   # must have parentheses to indicate uncertainty.
+   >>> var_p = am.c_to_p(var_c)
+   >>> var_p
+   SequenceVariant(ac=NP_001628.1, type=p, posedit=(Gly528Arg))
+   >>> str(var_p)
+   'NP_001628.1:p.(Gly528Arg)'
+
+   # setting uncertain to False removes the parentheses on the
+   # stringified form
+   >>> var_p.posedit.uncertain = False
+   >>> str(var_p)
+   'NP_001628.1:p.Gly528Arg'
+
+   # formatting can be customized, e.g., use 1 letter amino acids to
+   # format a specific variant
+   >>> var_p.format(conf={"p_3_letter": False})
+   'NP_001628.1:p.G528R'
+
+   # configuration may also be set globally
+   >>> hgvs.global_config.formatting.p_3_letter = False
+   >>> str(var_p)
+   'NP_001628.1:p.G528R'
+
 
 
 Normalizing variants
@@ -197,31 +239,65 @@ Other packages that manipulate HGVS variants:
 * `Mutalyzer <https://mutalyzer.nl/>`__
 
 
-
 .. _docs: http://hgvs.readthedocs.org/
 .. _Variation Nomenclature: http://varnomen.hgvs.org/
-.. _mailing list: https://groups.google.com/forum/#!forum/hgvs-discuss
-.. _Open Issues: https://github.com/biocommons/hgvs/issues
-.. _code: https://github.com/biocommons/hgvs
-.. _change log: https://hgvs.readthedocs.io/en/stable/changelog/
-.. _pypi: https://pypi.python.org/pypi/hgvs
-.. _Apache License: https://github.com/biocommons/hgvs/blob/master/LICENSE.txt
 
 
-.. |rtd_rel| image:: https://readthedocs.org/projects/hgvs/badge/
-  :target: http://hgvs.readthedocs.io/
-  :align: middle
+.. |rtd| image:: https://img.shields.io/badge/docs-readthedocs-green.svg
+   :target: http://hgvs.readthedocs.io/
 
-.. |pypi_rel| image:: https://badge.fury.io/py/hgvs.png
-  :target: https://pypi.python.org/pypi?name=hgvs
-  :align: middle
+.. |changelog| image:: https://img.shields.io/badge/docs-changelog-green.svg
+   :target: https://hgvs.readthedocs.io/en/stable/changelog/
 
-.. |status_rel| image:: https://travis-ci.org/biocommons/hgvs.png?branch=master
-  :target: https://travis-ci.org/biocommons/hgvs?branch=master
-  :align: middle 
+.. |github_license| image:: https://img.shields.io/github/license/biocommons/hgvs.svg
+   :alt: GitHub license
+   :target: https://github.com/biocommons/hgvs/blob/master/LICENSE)
+
+.. |group| image:: https://img.shields.io/badge/group-hgvs%20discuss-green.svg
+   :alt: Mailing list
+   :target: https://groups.google.com/forum/#!forum/hgvs-discuss
+
+.. |gitter| image:: https://img.shields.io/badge/chat-gitter-green.svg
+   :alt: Join the chat at https://gitter.im/biocommons/hgvs
+   :target: https://gitter.im/biocommons/hgvs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
+
+
+.. |github_tag| image:: https://img.shields.io/github/tag/biocommons/hgvs.svg
+   :alt: GitHub tag
+   :target: https://github.com/biocommons/hgvs
+
+.. |pypi_rel| image:: https://img.shields.io/pypi/v/hgvs.svg
+   :target: https://pypi.org/project/hgvs/
+
+
+.. |status_rel| image:: https://img.shields.io/travis/biocommons/hgvs/master.svg
+   :target: https://travis-ci.org/biocommons/hgvs?branch=master
+
+.. |coveralls| image:: https://img.shields.io/coveralls/github/biocommons/hgvs.svg
+   :target: https://coveralls.io/github/biocommons/hgvs
+
+.. |github_issues| image:: https://img.shields.io/github/issues-raw/biocommons/hgvs.svg
+   :alt: GitHub issues
+   :target: https://github.com/biocommons/hgvs/issues
+
+.. |github_open_pr| image:: https://img.shields.io/github/issues-pr/biocommons/hgvs.svg
+   :alt: GitHub Open Pull Requests
+   :target: https://github.com/biocommons/hgvs/pull/
+
+.. |github_stars| image:: https://img.shields.io/github/stars/biocommons/hgvs.svg?style=social&label=Stars
+   :alt: GitHub stars
+   :target: https://github.com/biocommons/hgvs/stargazers
+
+.. |github_forks| image:: https://img.shields.io/github/forks/biocommons/hgvs.svg?style=social&label=Forks
+   :alt: GitHub forks
+   :target: https://github.com/biocommons/hgvs/network
+
+.. |github_contrib| image:: https://img.shields.io/github/contributors/biocommons/hgvs.svg
+   :alt: GitHub license
+   :target: https://github.com/biocommons/hgvs/graphs/contributors/
+
 
 
 .. |install_status| image:: https://travis-ci.org/reece/hgvs-integration-test.png?branch=master
-  :target: https://travis-ci.org/reece/hgvs-integration-test
-  :align: middle
+   :target: https://travis-ci.org/reece/hgvs-integration-test
 
